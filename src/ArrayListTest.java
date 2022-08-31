@@ -269,4 +269,15 @@ class ArrayListTest {
 		names.remove();
 		assertEquals(1, names.size(), "After second removal size must be 1");
 	}
+	
+	@Test
+	void testGet() {
+		ArrayList <Integer> list = new ArrayList<>();
+		list.add(1);
+		list.add(-1);
+		list.add(5);
+		assertEquals(1, list.get(0), "First element must be 1");
+		assertEquals(-1, list.get(1), "Second element must be 1");
+		assertEquals(5, list.get(2), "Third element must be 1");
+	}
 }
