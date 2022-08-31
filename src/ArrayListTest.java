@@ -23,6 +23,7 @@ class ArrayListTest {
 		assertTrue(list.empty(), "Initial state must be empty");
 	}
 	
+	@Test
 	void testSize() {
 		ArrayList <Integer> list1 = new ArrayList<>();
 		assertEquals(0, list1.size(), "Initial size must be 0");
@@ -74,5 +75,91 @@ class ArrayListTest {
 		names.clear();
 		assertTrue(names.empty(), "Must be empty after clear");
 		assertEquals(0, names.size(), "Size must be 0 after clear");
+	}
+	
+	@Test
+	void testSwapWithEqualListSizes() {
+		ArrayList <Integer> list1 = new ArrayList<>();
+		list1.add(4);
+		list1.add(1);
+		list1.add(-1);
+		int[] values1 = {4, 1, -1};
+		
+		ArrayList <Integer> list2 = new ArrayList<>();
+		list2.add(5);
+		list2.add(6);
+		list2.add(7);
+		int[] values2 = {5, 6, 7};
+		
+		list1.swap(list2);
+		for (int i=0; i<values1.length; ++i) {
+			assertEquals(values1[i], list2.get(i), "Check list2 on position " + i);
+			assertEquals(values2[i], list1.get(i), "Check list1 on position " + i);
+		}
+		
+		list1.clear();
+		list2.clear();
+		
+		//Filling the lists with 10000 elements
+		for (int i=1; i<=10000; ++i) {
+			list1.add(i);
+			list2.add(-i);
+		}
+		list2.swap(list1);
+		for (int i=1; i<=10000; ++i) {
+			assertEquals(-i, list1.get(i), "Check list1 on position " + i);
+			assertEquals(i, list2.get(i), "Check list2 on position " + i);
+		}
+	}
+	
+	@Test
+	void testSwapWithDifferentListSizes() {
+		ArrayList <Integer> list1 = new ArrayList<>();
+		list1.add(4);
+		list1.add(1);
+		list1.add(-1);
+		int[] values1 = {4, 1, -1};
+		
+		ArrayList <Integer> list2 = new ArrayList<>();
+		list2.add(5);
+		list2.add(6);
+		list2.add(7);
+		list2.add(8);
+		list2.add(9);
+		int[] values2 = {5, 6, 7, 8, 9};
+		
+		list1.swap(list2);
+		assertEquals(values2.length, list1.size(), "List1's size must be " + values2.length);
+		assertEquals(values1.length, list2.size(), "List2's size must be " + values1.length);
+		
+		for (int i=0; i<values1.length; ++i) {
+			assertEquals(values1[i], list2.get(i), "Check list2 on position " + i);
+		}
+		
+		for (int i=0; i<values2.length; ++i) {
+			assertEquals(values2[i], list1.get(i), "Check list2 on position " + i);
+		}
+			
+		list1.clear();
+		list2.clear();
+		
+		//Filling list1 with 10000 elements
+		for (int i=1; i<=10000; ++i) {
+			list1.add(i);
+		}
+		
+		//Filling list2 with 100000 elements
+		for (int i=1; i<=100000; ++i) {
+			list1.add(-i);
+		}
+		
+		list2.swap(list1);
+		for (int i=1; i<=100000; ++i) {
+			assertEquals(-i, list1.get(i), "Check list1 on position " + i);
+		}
+		
+		for (int i=1; i<=10000; ++i) {
+			assertEquals(i, list2.get(i), "Check list2 on position " + i);
+		}
 	}
 }
