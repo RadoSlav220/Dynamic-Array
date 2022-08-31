@@ -280,4 +280,18 @@ class ArrayListTest {
 		assertEquals(-1, list.get(1), "Second element must be 1");
 		assertEquals(5, list.get(2), "Third element must be 1");
 	}
+	
+	@Test
+	void testSet() {
+		ArrayList <Integer> list = new ArrayList<>();
+		list.add(1);
+		list.add(-1);
+		list.add(5);
+		list.set(0, 2);
+		list.set(1, 3);
+		list.set(2, 4);
+		assertEquals(2, list.get(0), "First element must be 2");
+		assertEquals(3, list.get(1), "Second element must be 3");
+		assertEquals(4, list.get(2), "Third element must be 4");
+	}
 }
