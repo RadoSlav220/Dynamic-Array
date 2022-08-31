@@ -222,5 +222,19 @@ class ArrayListTest {
 		}
 	}
 	
+	@Test
+	void testShrinkToFit() {
+		ArrayList <Double> list = new ArrayList<>();
+		list.add(4.5);
+		list.add(1.2);
+		list.add(-1.9);
+		list.shrink_to_fit();
+		assertEquals(list.size(), list.capacity(), "Capacity must be equal to the size after shrink");
 	
+		list.resize(700);
+		list.remove();
+		list.reserve(10000);
+		list.shrink_to_fit();
+		assertEquals(list.size(), list.capacity(), "Capacity must be equal to the size after shrink");
+	}
 }
