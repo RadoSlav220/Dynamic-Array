@@ -245,6 +245,8 @@ class ArrayListTest {
 		assertEquals(1, list.size(), "After adding one element size must be 1");
 		list.add(7);
 		assertEquals(2, list.size(), "After adding second element size must be 2");
+		assertEquals(5, list.get(0), "First element must be 5");
+		assertEquals(7, list.get(1), "First element must be 7");
 		
 		ArrayList <Double> list2 = new ArrayList<>();
 		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
@@ -252,5 +254,19 @@ class ArrayListTest {
 		}
 		assertEquals(ArrayList.INITIAL_CAPACITY+1, list2.size(), "Size must be " + ArrayList.INITIAL_CAPACITY+1);
 		assertEquals(ArrayList.INITIAL_CAPACITY * 2, list2.capacity(), "Capacity must be doubled");
+	}
+	
+	@Test
+	void testRemove() {
+		ArrayList <String> names = new ArrayList<>();
+		names.add("Radoslav");
+		names.add("Christian");
+		names.add("Jonathan");
+		assertEquals(3, names.size(), "Size must be 3");
+		
+		names.remove();
+		assertEquals(2, names.size(), "After removal size must be 2");
+		names.remove();
+		assertEquals(1, names.size(), "After second removal size must be 1");
 	}
 }
