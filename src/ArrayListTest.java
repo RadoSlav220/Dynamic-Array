@@ -162,4 +162,24 @@ class ArrayListTest {
 			assertEquals(i, list2.get(i), "Check list2 on position " + i);
 		}
 	}
+	
+	@Test
+	void testCapacity() {
+		ArrayList <String> names = new ArrayList<>();
+		assertEquals(ArrayList.INITIAL_CAPACITY, names.capacity(), "Initial capacity must be " + ArrayList.INITIAL_CAPACITY);
+		
+		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
+			names.add("someName");
+		}
+		assertEquals(ArrayList.INITIAL_CAPACITY*2, names.capacity(), "Capacity must be 2 times the initial capacity");
+		
+		names.reserve(1000);
+		assertTrue(names.capacity() >= 1000, "Capacity must be atleast 1000");
+	
+		names.resize(50000);
+		assertTrue(names.capacity() >= 50000, "Capacity must be atleast 50000");
+	
+		names.shrink_to_fit();
+		assertEquals(names.size(), names.capacity(), "Capacity must fit the size");
+	}
 }

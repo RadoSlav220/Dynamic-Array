@@ -43,7 +43,7 @@ public class ArrayList <T> {
 		
 	}
 	
-	public void shrink() {
+	public void shrink_to_fit() {
 		
 	}
 	
