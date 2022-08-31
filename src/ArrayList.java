@@ -1,12 +1,14 @@
 
 public class ArrayList <T> {
-	private final int startingCapacity = 5;
+	public static final int INITIAL_CAPACITY = 5;
 	private T[] arr;
 	private int size;
 	private int capacity;
 	
 	public ArrayList(){
-		//arr = new T[];
+		this.arr = (T[]) new Object [INITIAL_CAPACITY];
+		this.size = 0;
+		this.capacity = INITIAL_CAPACITY;
 	}
 	
 	public ArrayList(int size) {
@@ -25,6 +27,10 @@ public class ArrayList <T> {
 		
 	}
 	
+	public void swap(ArrayList<T> other) {
+		
+	}
+	
 	public int capacity() {
 		return this.capacity;
 	}
@@ -37,7 +43,7 @@ public class ArrayList <T> {
 		
 	}
 	
-	public void shrink() {
+	public void shrink_to_fit() {
 		
 	}
 	
