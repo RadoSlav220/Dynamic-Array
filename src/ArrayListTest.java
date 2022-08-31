@@ -182,4 +182,14 @@ class ArrayListTest {
 		names.shrink_to_fit();
 		assertEquals(names.size(), names.capacity(), "Capacity must fit the size");
 	}
+	
+	@Test
+	void testReserve() {
+		ArrayList <String> names = new ArrayList<>();
+		final int request = 5000;
+		names.reserve(request);
+		assertTrue(names.capacity() >= request, "Capacity must be atleast the requested");
+		names.reserve(request * 5);
+		assertTrue(names.capacity() >= request * 5, "Capacity must be atleast the requested");
+	}
 }
