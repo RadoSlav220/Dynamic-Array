@@ -237,4 +237,20 @@ class ArrayListTest {
 		list.shrink_to_fit();
 		assertEquals(list.size(), list.capacity(), "Capacity must be equal to the size after shrink");
 	}
+	
+	@Test
+	void testAdd() {
+		ArrayList <Integer> list = new ArrayList<>();
+		list.add(5);
+		assertEquals(1, list.size(), "After adding one element size must be 1");
+		list.add(7);
+		assertEquals(2, list.size(), "After adding second element size must be 2");
+		
+		ArrayList <Double> list2 = new ArrayList<>();
+		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
+			list2.add(0.8);
+		}
+		assertEquals(ArrayList.INITIAL_CAPACITY+1, list2.size(), "Size must be " + ArrayList.INITIAL_CAPACITY+1);
+		assertEquals(ArrayList.INITIAL_CAPACITY * 2, list2.capacity(), "Capacity must be doubled");
+	}
 }
