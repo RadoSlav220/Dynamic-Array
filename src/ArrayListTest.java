@@ -294,4 +294,27 @@ class ArrayListTest {
 		assertEquals(3, list.get(1), "Second element must be 3");
 		assertEquals(4, list.get(2), "Third element must be 4");
 	}
+
+	@Test
+	void testConcatenate() {
+		ArrayList <Integer> list1 = new ArrayList<>();
+		for (int i=0; i<800; ++i) {
+			list1.add(i);
+		}
+		ArrayList <Integer> list2 = new ArrayList<>();
+		for (int i=800; i<1000; ++i) {
+			list2.add(i);
+		}
+		
+		list1.concatenate(list2);
+		assertEquals(1000, list1.size(), "After concatenation list1's size must be 1000");
+		for (int i=0; i<1000; ++i) {
+			assertEquals(i, list1.get(i));
+		}
+		
+		assertEquals(200, list2.size(), "List2's size must not be changed");
+		for (int i=800; i<1000; ++i) {
+			assertEquals(i, list2.get(i-800), "Nothing should be changed");
+		}
+	}
 }
