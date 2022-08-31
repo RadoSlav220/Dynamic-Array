@@ -64,4 +64,15 @@ class ArrayListTest {
 		names.clear();
 		assertTrue(names.empty(), "Must be empty after clear");
 	}
+	
+	@Test
+	void testClear() {
+		ArrayList <String> names = new ArrayList<>();
+		names.add("Radoslav");
+		names.add("Kaloyan");
+		names.add("Sofia");
+		names.clear();
+		assertTrue(names.empty(), "Must be empty after clear");
+		assertEquals(0, names.size(), "Size must be 0 after clear");
+	}
 }
