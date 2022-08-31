@@ -192,4 +192,35 @@ class ArrayListTest {
 		names.reserve(request * 5);
 		assertTrue(names.capacity() >= request * 5, "Capacity must be atleast the requested");
 	}
+	
+	@Test
+	void testResize() {
+		ArrayList <Integer> list = new ArrayList<>();
+		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
+			list.add(i);
+		}
+		
+		int previousSize = list.size();
+		final int resizeTo1 = ArrayList.INITIAL_CAPACITY*2 + 14; 
+		list.resize(resizeTo1);
+		assertEquals(resizeTo1, list.size(), "Size must be " + resizeTo1);
+		
+		//If resize requested number is greater than the original 
+		//size, the rest of the list must be filled with zeroes
+		for (int i=previousSize; i<list.size(); ++i) {
+			assertEquals(0, list.get(i), "Every element after position " + previousSize + " must be 0");
+		}
+		
+		final int resizeTo2 = ArrayList.INITIAL_CAPACITY / 2 + 1;
+		list.resize(resizeTo2);
+		assertEquals(resizeTo2, list.size(), "Size must be " + resizeTo2);
+		
+		//If resize requested number is smaller than the original
+		//size, the method must cut the elements after a certain position onwards
+		for (int i=0; i<list.size(); ++i) {
+			assertEquals(i, list.get(i), "Check the position " + i);
+		}
+	}
+	
+	
 }
