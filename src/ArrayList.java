@@ -1,3 +1,5 @@
+//import java.lang.IllegalArgumentException;
+//import java.lang.Exception;
 
 public class ArrayList <T> {
 	public static final int INITIAL_CAPACITY = 5;
@@ -11,8 +13,13 @@ public class ArrayList <T> {
 		this.capacity = INITIAL_CAPACITY;
 	}
 	
-	public ArrayList(int size) {
-		
+	public ArrayList(int capacity) throws IllegalArgumentException {
+		if (capacity < 0) {
+			throw new IllegalArgumentException("Initial capacity must be non-negative number.");
+		}
+		this.arr = (T[]) new Object [capacity];
+		this.capacity = capacity;
+		this.size = 0;
 	}
 	
 	public int size() {

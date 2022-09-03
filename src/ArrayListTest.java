@@ -21,6 +21,8 @@ class ArrayListTest {
 		assertEquals(INITIAL_CAPACITY, list.capacity(), "Initial capacity must be " + INITIAL_CAPACITY);
 		assertEquals(0, list.size(), "Initial size must be 0");
 		assertTrue(list.empty(), "Initial state must be empty");
+		
+		assertThrows(IllegalArgumentException.class, () -> {new ArrayList<Integer>(-5);});
 	}
 	
 	@Test
