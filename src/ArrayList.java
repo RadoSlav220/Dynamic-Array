@@ -127,6 +127,10 @@ public class ArrayList <T> {
 	}
 	
 	public void concatenate(ArrayList<T> other) {
-		
+		reserve(this.size + other.size);
+		for (int i=0; i<other.size; ++i) {
+			arr[this.size + i] = other.get(i);
+		}
+		this.size += other.size;
 	}
 }
