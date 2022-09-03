@@ -114,14 +114,14 @@ public class ArrayList <T> {
 	
 	public T get(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= this.size) {
-			throw new IndexOutOfBoundsException("Cannot remove an element from an empty array");
+			throw new IndexOutOfBoundsException("Invalid index");
 		}
 		return this.arr[index];
 	}
 	
 	public void set(int index, T newValue) {
 		if (index < 0 || index >= this.size) {
-			throw new IndexOutOfBoundsException("Cannot remove an element from an empty array");
+			throw new IndexOutOfBoundsException("Invalid index");
 		}
 		arr[index] = newValue;
 	}

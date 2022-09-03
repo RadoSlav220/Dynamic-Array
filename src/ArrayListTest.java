@@ -109,8 +109,8 @@ class ArrayListTest {
 		}
 		list2.swap(list1);
 		for (int i=1; i<=10000; ++i) {
-			assertEquals(-i, list1.get(i), "Check list1 on position " + i);
-			assertEquals(i, list2.get(i), "Check list2 on position " + i);
+			assertEquals(-i, list1.get(i-1), "Check list1 on position " + i);
+			assertEquals(i, list2.get(i-1), "Check list2 on position " + i);
 		}
 	}
 	
@@ -152,16 +152,16 @@ class ArrayListTest {
 		
 		//Filling list2 with 100000 elements
 		for (int i=1; i<=100000; ++i) {
-			list1.add(-i);
+			list2.add(-i);
 		}
 		
 		list2.swap(list1);
 		for (int i=1; i<=100000; ++i) {
-			assertEquals(-i, list1.get(i), "Check list1 on position " + i);
+			assertEquals(-i, list1.get(i-1), "Check list1 on position " + i);
 		}
 		
 		for (int i=1; i<=10000; ++i) {
-			assertEquals(i, list2.get(i), "Check list2 on position " + i);
+			assertEquals(i, list2.get(i-1), "Check list2 on position " + i);
 		}
 	}
 	
@@ -210,7 +210,7 @@ class ArrayListTest {
 		//If resize requested number is greater than the original 
 		//size, the rest of the list must be filled with zeroes
 		for (int i=previousSize; i<list.size(); ++i) {
-			assertEquals(0, list.get(i), "Every element after position " + previousSize + " must be 0");
+			assertEquals(null, list.get(i), "Every element after position " + previousSize + " must be 0");
 		}
 		
 		final int resizeTo2 = ArrayList.INITIAL_CAPACITY / 2 + 1;
