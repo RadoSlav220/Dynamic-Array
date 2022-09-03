@@ -58,19 +58,38 @@ public class ArrayList <T> {
 	}
 	
 	@SuppressWarnings("unchecked")
+	private void increaseCapacity(int newCapacity) throws IllegalArgumentException {
+		if (newCapacity <= this.capacity) {
+			throw new IllegalArgumentException("Invalid new capacity value");
+		}
+		T[] newArr = (T[]) new Object[newCapacity];
+		for (int i=0; i<this.size; ++i) {
+			newArr[i] = arr[i];
+		}
+		this.arr = newArr;
+		this.capacity = newCapacity;
+	}
+	
 	public void reserve(int capacity) {
 		if (this.capacity < capacity) {
-			T[] newArr = (T[]) new Object[capacity];
-			for (int i=0; i<size; ++i) {
-				newArr[i] = arr[i];
-			}
-			arr = newArr;
-			this.capacity = capacity;
+			increaseCapacity(capacity);
 		}
 	}
 	
-	public void resize(int capacity) {
+	public void resize(int newSize) throws IllegalArgumentException {
+		if (newSize < 0) {
+			throw new IllegalArgumentException("New size must be non-negative number");
+		}
 		
+		if (newSize > this.capacity) {
+			increaseCapacity(newSize);
+		}
+		else if (newSize < this.size) {
+			for (int i=this.size-1; i>=newSize; --i) {
+				this.arr[i] = null;
+			}
+		}
+		this.size = newSize;
 	}
 	
 	public void shrink_to_fit() {
