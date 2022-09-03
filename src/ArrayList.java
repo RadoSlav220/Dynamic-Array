@@ -112,8 +112,11 @@ public class ArrayList <T> {
 		this.size--;
 	}
 	
-	public T get(int position) {
-		return null;
+	public T get(int index) throws IndexOutOfBoundsException {
+		if (index < 0 || index >= this.size) {
+			throw new IndexOutOfBoundsException("Cannot remove an element from an empty array");
+		}
+		return this.arr[index];
 	}
 	
 	public void set(int position, T newValue) {
