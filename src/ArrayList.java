@@ -58,9 +58,9 @@ public class ArrayList <T> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void increaseCapacity(int newCapacity) throws IllegalArgumentException {
-		if (newCapacity <= this.capacity) {
-			throw new IllegalArgumentException("Invalid new capacity value");
+	private void changeCapacity(int newCapacity) throws IllegalArgumentException {
+		if (newCapacity < this.size) {
+			throw new IllegalArgumentException("Invalid new capacity value.");
 		}
 		T[] newArr = (T[]) new Object[newCapacity];
 		for (int i=0; i<this.size; ++i) {
@@ -72,7 +72,7 @@ public class ArrayList <T> {
 	
 	public void reserve(int capacity) {
 		if (this.capacity < capacity) {
-			increaseCapacity(capacity);
+			changeCapacity(capacity);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class ArrayList <T> {
 		}
 		
 		if (newSize > this.capacity) {
-			increaseCapacity(newSize);
+			changeCapacity(newSize);
 		}
 		else if (newSize < this.size) {
 			for (int i=this.size-1; i>=newSize; --i) {
@@ -93,10 +93,15 @@ public class ArrayList <T> {
 	}
 	
 	public void shrink_to_fit() {
-		
+		changeCapacity(this.size);
 	}
 	
 	public boolean add(T newElement) {
+		if (this.size + 1 > this.capacity) {
+			changeCapacity(this.capacity * 2);
+		}
+		arr[this.size] = newElement;
+		this.size++;
 		return true;
 	}
 	
