@@ -119,8 +119,11 @@ public class ArrayList <T> {
 		return this.arr[index];
 	}
 	
-	public void set(int position, T newValue) {
-		
+	public void set(int index, T newValue) {
+		if (index < 0 || index >= this.size) {
+			throw new IndexOutOfBoundsException("Cannot remove an element from an empty array");
+		}
+		arr[index] = newValue;
 	}
 	
 	public void concatenate(ArrayList<T> other) {
