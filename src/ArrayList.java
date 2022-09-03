@@ -105,8 +105,11 @@ public class ArrayList <T> {
 		return true;
 	}
 	
-	public void remove() {
-		
+	public void remove() throws ArrayIndexOutOfBoundsException {
+		if (this.size == 0) {
+			throw new ArrayIndexOutOfBoundsException("Cannot remove an element from an empty array");
+		}
+		this.size--;
 	}
 	
 	public T get(int position) {
