@@ -1,6 +1,3 @@
-//import java.lang.IllegalArgumentException;
-//import java.lang.Exception;
-
 public class ArrayList <T> {
 	public static final int INITIAL_CAPACITY = 5;
 	private T[] arr;
@@ -98,7 +95,12 @@ public class ArrayList <T> {
 	
 	public boolean add(T newElement) {
 		if (this.size + 1 > this.capacity) {
-			changeCapacity(this.capacity * 2);
+			if (this.size > 0) {
+				changeCapacity(this.capacity * 2);	
+			}
+			else {
+				changeCapacity(1);
+			}
 		}
 		arr[this.size] = newElement;
 		this.size++;
