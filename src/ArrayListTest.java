@@ -319,4 +319,31 @@ class ArrayListTest {
 			assertEquals(i, list2.get(i-800), "Nothing should be changed");
 		}
 	}
+	
+	@Test
+	void arrayWithZeroCapacityTest() {
+		ArrayList <Double> numbers = new ArrayList<>(0);
+		assertEquals(0, numbers.size(), "Size must be 0");
+		assertEquals(0, numbers.capacity(), "Capacity must be 0");
+		
+		numbers.add(9.4);
+		assertEquals(1, numbers.size(), "There must not be problem adding an element");
+		assertEquals(1, numbers.capacity());
+	}
+	
+	@Test
+	void resizeToZeroCapacityTest() {
+		ArrayList <Integer> list = new ArrayList<>();
+		list.add(4);
+		list.add(5);
+		list.resize(0);
+		list.shrink_to_fit();
+
+		assertEquals(0, list.size(), "Size must be 0");
+		assertEquals(0, list.capacity(), "Capacity must be 0");
+
+		list.add(9);
+		assertEquals(1, list.size(), "There must not be problem adding an element");
+		assertEquals(1, list.capacity());
+	}
 }
