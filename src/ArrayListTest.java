@@ -21,6 +21,8 @@ class ArrayListTest {
 		assertEquals(INITIAL_CAPACITY, list.capacity(), "Initial capacity must be " + INITIAL_CAPACITY);
 		assertEquals(0, list.size(), "Initial size must be 0");
 		assertTrue(list.empty(), "Initial state must be empty");
+		
+		assertThrows(IllegalArgumentException.class, () -> {new ArrayList<Integer>(-5);});
 	}
 	
 	@Test
@@ -107,8 +109,8 @@ class ArrayListTest {
 		}
 		list2.swap(list1);
 		for (int i=1; i<=10000; ++i) {
-			assertEquals(-i, list1.get(i), "Check list1 on position " + i);
-			assertEquals(i, list2.get(i), "Check list2 on position " + i);
+			assertEquals(-i, list1.get(i-1), "Check list1 on position " + i);
+			assertEquals(i, list2.get(i-1), "Check list2 on position " + i);
 		}
 	}
 	
@@ -150,16 +152,16 @@ class ArrayListTest {
 		
 		//Filling list2 with 100000 elements
 		for (int i=1; i<=100000; ++i) {
-			list1.add(-i);
+			list2.add(-i);
 		}
 		
 		list2.swap(list1);
 		for (int i=1; i<=100000; ++i) {
-			assertEquals(-i, list1.get(i), "Check list1 on position " + i);
+			assertEquals(-i, list1.get(i-1), "Check list1 on position " + i);
 		}
 		
 		for (int i=1; i<=10000; ++i) {
-			assertEquals(i, list2.get(i), "Check list2 on position " + i);
+			assertEquals(i, list2.get(i-1), "Check list2 on position " + i);
 		}
 	}
 	
@@ -208,7 +210,7 @@ class ArrayListTest {
 		//If resize requested number is greater than the original 
 		//size, the rest of the list must be filled with zeroes
 		for (int i=previousSize; i<list.size(); ++i) {
-			assertEquals(0, list.get(i), "Every element after position " + previousSize + " must be 0");
+			assertEquals(null, list.get(i), "Every element after position " + previousSize + " must be 0");
 		}
 		
 		final int resizeTo2 = ArrayList.INITIAL_CAPACITY / 2 + 1;
@@ -316,5 +318,32 @@ class ArrayListTest {
 		for (int i=800; i<1000; ++i) {
 			assertEquals(i, list2.get(i-800), "Nothing should be changed");
 		}
+	}
+	
+	@Test
+	void arrayWithZeroCapacityTest() {
+		ArrayList <Double> numbers = new ArrayList<>(0);
+		assertEquals(0, numbers.size(), "Size must be 0");
+		assertEquals(0, numbers.capacity(), "Capacity must be 0");
+		
+		numbers.add(9.4);
+		assertEquals(1, numbers.size(), "There must not be problem adding an element");
+		assertEquals(1, numbers.capacity());
+	}
+	
+	@Test
+	void resizeToZeroCapacityTest() {
+		ArrayList <Integer> list = new ArrayList<>();
+		list.add(4);
+		list.add(5);
+		list.resize(0);
+		list.shrink_to_fit();
+
+		assertEquals(0, list.size(), "Size must be 0");
+		assertEquals(0, list.capacity(), "Capacity must be 0");
+
+		list.add(9);
+		assertEquals(1, list.size(), "There must not be problem adding an element");
+		assertEquals(1, list.capacity());
 	}
 }
