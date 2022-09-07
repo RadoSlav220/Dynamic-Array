@@ -177,10 +177,10 @@ class ArrayListTest {
 		
 		names.reserve(1000);
 		assertTrue(names.capacity() >= 1000, "Capacity must be atleast 1000");
-	
+		
 		names.resize(50000);
 		assertTrue(names.capacity() >= 50000, "Capacity must be atleast 50000");
-	
+		
 		names.shrink_to_fit();
 		assertEquals(names.size(), names.capacity(), "Capacity must fit the size");
 	}
@@ -202,20 +202,13 @@ class ArrayListTest {
 			list.add(i);
 		}
 		
-		int previousSize = list.size();
-		final int resizeTo1 = ArrayList.INITIAL_CAPACITY*2 + 14; 
+		final int resizeTo1 = ArrayList.INITIAL_CAPACITY * 2 + 14; 
 		list.resize(resizeTo1);
-		assertEquals(resizeTo1, list.size(), "Size must be " + resizeTo1);
-		
-		//If resize requested number is greater than the original 
-		//size, the rest of the list must be filled with zeroes
-		for (int i=previousSize; i<list.size(); ++i) {
-			assertEquals(null, list.get(i), "Every element after position " + previousSize + " must be 0");
-		}
+		assertEquals(resizeTo1, list.capacity(), "Size must be " + resizeTo1);
 		
 		final int resizeTo2 = ArrayList.INITIAL_CAPACITY / 2 + 1;
 		list.resize(resizeTo2);
-		assertEquals(resizeTo2, list.size(), "Size must be " + resizeTo2);
+		assertEquals(resizeTo2, list.capacity(), "Size must be " + resizeTo2);
 		
 		//If resize requested number is smaller than the original
 		//size, the method must cut the elements after a certain position onwards
