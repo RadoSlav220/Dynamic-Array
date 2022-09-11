@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Dynamic Array (ArrayList in Java)
  * 
@@ -12,6 +15,35 @@ public class ArrayList <T> {
 	private T[] array;
 	private int size;
 	private int capacity;
+	
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.deepHashCode(array);
+		result = prime * result + Objects.hash(capacity, size);
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ArrayList other = (ArrayList) obj;
+		return Arrays.deepEquals(array, other.array) && capacity == other.capacity && size == other.size;
+	}
+
+
+	@Override
+	public String toString() {
+		return "ArrayList [array=" + Arrays.toString(array) + ", size=" + size + ", capacity=" + capacity + "]";
+	}
 	
 	
 	/**
