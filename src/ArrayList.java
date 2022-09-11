@@ -16,7 +16,9 @@ public class ArrayList <T> {
 	private int size;
 	private int capacity;
 	
-	
+	/**
+	 * Returns a hash code value for the object.
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -27,6 +29,9 @@ public class ArrayList <T> {
 	}
 
 
+	/**
+	 * Indicates whether some other object is "equal to" this one.
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -40,6 +45,9 @@ public class ArrayList <T> {
 	}
 
 
+	/**
+	 * Returns a string representation of the object.
+	 */
 	@Override
 	public String toString() {
 		return "ArrayList [array=" + Arrays.toString(array) + ", size=" + size + ", capacity=" + capacity + "]";
