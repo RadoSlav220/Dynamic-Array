@@ -1,9 +1,50 @@
+package myArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 class ArrayListTest {
 
+	@Test
+	void testHashCode() {
+		ArrayList <String> reference1 = new ArrayList<>();
+		reference1.add("Radoslav");
+		ArrayList <String> reference2 = reference1;
+		assertEquals(reference1.hashCode(), reference2.hashCode());
+		
+		ArrayList <String> reference3 = new ArrayList<>();
+		assertNotEquals(reference1.hashCode(), reference3.hashCode());
+	}
+	
+	@Test
+	void testEquals() {
+		ArrayList <Integer> list1 = new ArrayList<>();
+		ArrayList <Integer> list2 = new ArrayList<>();
+		for (int i=0; i<100; ++i) {
+			list1.add(i);
+			list2.add(i);
+		}
+		assertTrue(list1.equals(list2));
+		assertTrue(list2.equals(list1));
+		list1.remove();
+		assertFalse(list1.equals(list2));
+		assertFalse(list2.equals(list1));
+	}
+	
+	@Test
+	void testToString() {
+		ArrayList <Integer> numbers = new ArrayList<>();
+		numbers.add(4);
+		numbers.add(5);
+		numbers.add(8);
+		assertTrue(numbers.toString().equals("[4, 5, 8]"));
+		numbers.clear();
+		assertTrue(numbers.toString().equals("[]"));
+		numbers.add(180);
+		assertTrue(numbers.toString().equals("[180]"));
+	}
+	
 	@Test
 	void testDefaultConstructor() {
 		ArrayList <Integer> list = new ArrayList<>();
@@ -296,6 +337,8 @@ class ArrayListTest {
 		for (int i=0; i<800; ++i) {
 			list1.add(i);
 		}
+		assertThrows(NullPointerException.class, () -> {list1.concatenate(null);});
+		
 		ArrayList <Integer> list2 = new ArrayList<>();
 		for (int i=800; i<1000; ++i) {
 			list2.add(i);
@@ -314,7 +357,7 @@ class ArrayListTest {
 	}
 	
 	@Test
-	void arrayWithZeroCapacityTest() {
+	void testArrayWithZeroCapacity() {
 		ArrayList <Double> numbers = new ArrayList<>(0);
 		assertEquals(0, numbers.size(), "Size must be 0");
 		assertEquals(0, numbers.capacity(), "Capacity must be 0");
@@ -325,7 +368,7 @@ class ArrayListTest {
 	}
 	
 	@Test
-	void resizeToZeroCapacityTest() {
+	void testResizeToZeroCapacity() {
 		ArrayList <Integer> list = new ArrayList<>();
 		list.add(4);
 		list.add(5);
@@ -338,5 +381,28 @@ class ArrayListTest {
 		list.add(9);
 		assertEquals(1, list.size(), "There must not be problem adding an element");
 		assertEquals(1, list.capacity());
+	}
+	
+	@Test
+	void extremeTest() {
+		ArrayList <Integer> numbers = new ArrayList<>();
+		final int EXTREME_COUNT = 80_000_000;
+		
+		for (int i=0; i<EXTREME_COUNT; ++i) {
+			numbers.add(i);
+		}
+		assertEquals(EXTREME_COUNT, numbers.size(), "Size must be 1 million");
+		for (int i=0; i<EXTREME_COUNT; ++i){
+			assertEquals(i, numbers.get(i), "On pos " + i + " must be " + i);
+		}
+		
+		for (int i=0; i<EXTREME_COUNT/2; ++i) {
+			numbers.remove();
+		}
+		assertEquals(EXTREME_COUNT - EXTREME_COUNT/2, numbers.size());
+		assertTrue(numbers.capacity() >= EXTREME_COUNT, "Capacity must be kept");
+		
+		numbers.shrink_to_fit();
+		assertEquals(numbers.size(), numbers.capacity());
 	}
 }

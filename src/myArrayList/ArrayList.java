@@ -1,3 +1,4 @@
+package myArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -50,7 +51,15 @@ public class ArrayList <T> {
 	 */
 	@Override
 	public String toString() {
-		return "ArrayList [array=" + Arrays.toString(array) + ", size=" + size + ", capacity=" + capacity + "]";
+		StringBuilder result = new StringBuilder("[");
+		if (this.size > 0) {
+			for (int i=0; i<this.size-1; ++i) {
+				result.append(array[i] + ", ");
+			}
+			result.append(array[this.size-1]);
+		}
+		result.append("]");
+		return result.toString();
 	}
 	
 	
@@ -68,7 +77,7 @@ public class ArrayList <T> {
 	/**
 	 * Receives the size of the array and constructs an array with exactly that number of elements.
 	 * @param capacity
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException if the capacity is negative.
 	 */
 	@SuppressWarnings("unchecked")
 	public ArrayList(int capacity) throws IllegalArgumentException {
@@ -167,7 +176,7 @@ public class ArrayList <T> {
 	 * Set the size of the capacity to a specified value. 
 	 * @param newCapacity - The desired new size of the capacity.
 	 * @throws IllegalArgumentException - If the desired new size
-	 * of the capacity is negative, throw an exception.
+	 * of the capacity is negative.
 	 */
 	public void resize(int newCapacity) throws IllegalArgumentException {
 		if (newCapacity < 0) {
@@ -222,8 +231,8 @@ public class ArrayList <T> {
 	/**
 	 * @param index
 	 * @return The element at the specified position in the array.
-	 * @throws IndexOutOfBoundsException - If the given index is
-	 * invalid, throw an exception.
+	 * @throws IndexOutOfBoundsException if the index is out of range 
+	 * (index < 0 || index >= size())
 	 */
 	public T get(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= this.size) {
@@ -238,6 +247,8 @@ public class ArrayList <T> {
 	 * with the specified element.
 	 * @param index
 	 * @param newValue
+	 * @throws IndexOutOfBoundsException if the index is out of range 
+	 * (index < 0 || index >= size())
 	 */
 	public void set(int index, T newValue) {
 		if (index < 0 || index >= this.size) {
@@ -252,8 +263,12 @@ public class ArrayList <T> {
 	 * one. The other array is not changed by the operation.
 	 * @param other - An ArrayList of the same type to be
 	 * concatenated.
+	 * @throws NullPointerException if the given reference is null. 
 	 */
 	public void concatenate(ArrayList<T> other) {
+		if (other == null) {
+			throw new NullPointerException("Concatenation with null object!");
+		}
 		reserve(this.size + other.size);
 		for (int i=0; i<other.size; ++i) {
 			array[this.size + i] = other.get(i);
