@@ -13,12 +13,14 @@ import java.util.Objects;
 
 public class ArrayList <T> {
 	public static final int INITIAL_CAPACITY = 5;
+	public static final double GROWING_CONSTANT = 2;
 	private T[] array;
 	private int size;
 	private int capacity;
 	
 	/**
 	 * Returns a hash code value for the object.
+	 * Provides no-throw guarantee.
 	 */
 	@Override
 	public int hashCode() {
@@ -32,6 +34,7 @@ public class ArrayList <T> {
 
 	/**
 	 * Indicates whether some other object is "equal to" this one.
+	 * Provides no-throw guarantee.
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -48,15 +51,16 @@ public class ArrayList <T> {
 
 	/**
 	 * Returns a string representation of the object.
+	 * Provides strong exception guarantee.
 	 */
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder("[");
 		if (this.size > 0) {
 			for (int i=0; i<this.size-1; ++i) {
-				result.append(array[i] + ", ");
+				result.append(array[i].toString() + ", ");
 			}
-			result.append(array[this.size-1]);
+			result.append(array[this.size-1].toString());
 		}
 		result.append("]");
 		return result.toString();
@@ -76,21 +80,23 @@ public class ArrayList <T> {
 	
 	/**
 	 * Receives the size of the array and constructs an array with exactly that number of elements.
-	 * @param capacity
-	 * @throws IllegalArgumentException if the capacity is negative.
+	 * @param initialCapacity the initial capacity of the list.
+	 * @throws IllegalArgumentException if the given capacity is negative.
+	 * @throws OutOfMemoryError if there is no enough memory.
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList(int capacity) throws IllegalArgumentException {
-		if (capacity < 0) {
+	public ArrayList(int initialCapacity) {
+		if (initialCapacity < 0) {
 			throw new IllegalArgumentException("Initial capacity must be non-negative number.");
 		}
-		this.array = (T[]) new Object [capacity];
-		this.capacity = capacity;
+		this.array = (T[]) new Object [initialCapacity];
+		this.capacity = initialCapacity;
 		this.size = 0;
 	}
 	
 	
 	/**
+	 * Provides no-throw guarantee.
 	 * @return Number of elements stored in the container.
 	 */
 	public int size() {
@@ -99,6 +105,7 @@ public class ArrayList <T> {
 	
 	
 	/**
+	 * Provides no-throw guarantee.
 	 * @return Whether the container is empty.
 	 */
 	public boolean empty() {
@@ -108,6 +115,7 @@ public class ArrayList <T> {
 	
 	/**
 	 * Empty the content of the container.
+	 * Provides no-throw guarantee.
 	 */
 	public void clear() {
 		for (int i=0; i<size; ++i) {
@@ -118,8 +126,8 @@ public class ArrayList <T> {
 	
 	
 	/**
-	 * Exchanges the contents of two containers.
-	 * @param other - Another ArrayList with the same type of data stored in.
+	 * Exchanges the contents of two containers. Provides no-throw guarantee.
+	 * @param other Another ArrayList with the same type of data stored in.
 	 */
 	public void swap(ArrayList<T> other) {
 		T[] tempArr = this.array;
@@ -137,50 +145,40 @@ public class ArrayList <T> {
 	
 	
 	/**
+	 * Provides no-throw guarantee.
 	 * @return The size of the underlying buffer.
 	 */
 	public int capacity() {
 		return this.capacity;
-	}
-	
-	
-	/**
-	 * Changes the capacity of the array, keeping the stored data.
-	 * @param newCapacity - The desired new capacity.
-	 */
-	@SuppressWarnings("unchecked")
-	private void changeCapacity(int newCapacity) {
-		T[] newArr = (T[]) new Object[newCapacity];
-		int newSize = Math.min (newCapacity, this.size);
-		for (int i=0; i<newSize; ++i) {
-			newArr[i] = array[i];
-		}
-		this.array = newArr;
-		this.capacity = newCapacity;
-		this.size = newSize;
-	}
-	
+	}	
+
 	
 	/**
 	 * Ensures that the underlying buffer has at least a certain capacity.
-	 * @param capacity
+	 * 
+	 * @param requestedCapacity The desired minimum capacity.
+	 * @throws OutOfMemoryError if there is no enough memory.
+	 * Provides strong exception guarantee.
 	 */
-	public void reserve(int capacity) {
-		if (this.capacity < capacity) {
-			changeCapacity(capacity);
+	public void reserve(int requestedCapacity) {
+		if (this.capacity < requestedCapacity) {
+			int newCapacity = Math.max(nextCapacity(), requestedCapacity);
+			changeCapacity(newCapacity);
 		}
 	}
 	
 	
 	/**
 	 * Set the size of the capacity to a specified value. 
-	 * @param newCapacity - The desired new size of the capacity.
-	 * @throws IllegalArgumentException - If the desired new size
-	 * of the capacity is negative.
+	 * @param newCapacity The desired new size of the capacity.
+	 * @throws IllegalArgumentException if the desired new size
+	 * of the capacity is a negative number.
+	 * @throws OutOfMemoryError if there is no enough memory.
+	 * Provides strong exception guarantee.
 	 */
-	public void resize(int newCapacity) throws IllegalArgumentException {
+	public void resize(int newCapacity) {
 		if (newCapacity < 0) {
-			throw new IllegalArgumentException("New size must be non-negative number");
+			throw new IllegalArgumentException("New size must be non-negative number.");
 		}
 		changeCapacity(newCapacity);
 	}
@@ -188,6 +186,8 @@ public class ArrayList <T> {
 	
 	/**
 	 * Reduce memory usage by freeing unused memory (if possible).
+	 * @throws OutOfMemoryError if there is no enough memory (for changing capacity).
+	 * Provides strong exception guarantee.
 	 */
 	public void shrink_to_fit() {
 		changeCapacity(this.size);
@@ -196,13 +196,15 @@ public class ArrayList <T> {
 	
 	/**
 	 * Append the specified element to the end of the list. 
-	 * @param newElement - element to be appended 
+	 * @param newElement The element to be appended.
+	 * @throws OutOfMemoryError if there is no enough memory. 
+	 * Provides strong exception guarantee.
 	 * @return true
 	 */
 	public boolean add(T newElement) {
 		if (this.size + 1 > this.capacity) {
-			if (this.size > 0) {
-				changeCapacity(this.capacity * 2);	
+			if (this.capacity > 0) {
+				changeCapacity(nextCapacity());	
 			}
 			else {
 				changeCapacity(1);
@@ -216,10 +218,10 @@ public class ArrayList <T> {
 	
 	/**
 	 * Remove the element at the end of the array.
-	 * @throws ArrayIndexOutOfBoundsException - If the container
-	 * is empty, elements cannot be removed, throw an exception.
+	 * @throws ArrayIndexOutOfBoundsException if the container is empty.
+	 * Provides strong exception guarantee.
 	 */
-	public void remove() throws ArrayIndexOutOfBoundsException {
+	public void remove() {
 		if (this.size == 0) {
 			throw new ArrayIndexOutOfBoundsException("Cannot remove an element from an empty array");
 		}
@@ -229,12 +231,13 @@ public class ArrayList <T> {
 	
 	
 	/**
-	 * @param index
+	 * Returns the element at the specified position in this list.
+	 * @param index Index of the element to return.
 	 * @return The element at the specified position in the array.
-	 * @throws IndexOutOfBoundsException if the index is out of range 
-	 * (index < 0 || index >= size())
+	 * @throws IndexOutOfBoundsException if the index is out of range.
+	 * Provides strong exception guarantee.
 	 */
-	public T get(int index) throws IndexOutOfBoundsException {
+	public T get(int index) {
 		if (index < 0 || index >= this.size) {
 			throw new IndexOutOfBoundsException("Invalid index");
 		}
@@ -245,25 +248,27 @@ public class ArrayList <T> {
 	/**
 	 * Replaces the element at the specified position in the list 
 	 * with the specified element.
-	 * @param index
-	 * @param newValue
-	 * @throws IndexOutOfBoundsException if the index is out of range 
-	 * (index < 0 || index >= size())
+	 * @param index Index of the element to replace.
+	 * @param element The element to be stored at the specified position.
+	 * @throws IndexOutOfBoundsException if the index is out of range.
+	 * Provides strong exception guarantee.
 	 */
-	public void set(int index, T newValue) {
+	public void set(int index, T element) {
 		if (index < 0 || index >= this.size) {
 			throw new IndexOutOfBoundsException("Invalid index");
 		}
-		array[index] = newValue;
+		array[index] = element;
 	}
 	
 	
 	/**
-	 * Concatenates the contents of another array to the current 
-	 * one. The other array is not changed by the operation.
-	 * @param other - An ArrayList of the same type to be
+	 * Concatenates the contents of another array to the current one. 
+	 * The other array is not changed by the operation.
+	 * @param other An ArrayList of the same type to be
 	 * concatenated.
-	 * @throws NullPointerException if the given reference is null. 
+	 * @throws NullPointerException if the given reference is null.
+	 * @throws OutOfMemoryError if there is no enough memory. 
+	 * Provides strong exception guarantee.
 	 */
 	public void concatenate(ArrayList<T> other) {
 		if (other == null) {
@@ -274,5 +279,33 @@ public class ArrayList <T> {
 			array[this.size + i] = other.get(i);
 		}
 		this.size += other.size;
+	}
+	
+	
+	/**
+	 * Provides no-throw guarantee.
+	 * @return The capacity after next extension.
+	 */
+	private int nextCapacity() {
+		return (int)Math.ceil(this.capacity * GROWING_CONSTANT);
+	}
+	
+	
+	/**
+	 * Changes the capacity of the array, keeping the stored data (as much as possible).
+	 * @param newCapacity The desired new capacity.
+	 * @throws OutOfMemoryError if there is no enough memory.
+	 * Provides strong exception guarantee.
+	 */
+	@SuppressWarnings("unchecked")
+	private void changeCapacity(int newCapacity) {
+		T[] newArr = (T[]) new Object[newCapacity];
+		int newSize = Math.min (newCapacity, this.size);
+		for (int i=0; i<newSize; ++i) {
+			newArr[i] = array[i];
+		}
+		this.array = newArr;
+		this.capacity = newCapacity;
+		this.size = newSize;
 	}
 }

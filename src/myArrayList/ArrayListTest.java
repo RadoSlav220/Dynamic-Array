@@ -6,19 +6,61 @@ import org.junit.jupiter.api.Test;
 
 class ArrayListTest {
 
+/******************************Helper tools*********************************/
+	
+	//We assume that every combination of String, int and double values
+	//can construct a valid Student object.
+	record Student(String name, int fn, double grade) {}
+
+	private final String[] globalNames = {"Radoslav", "Kaloyan", "Sofia"};
+	
+	ArrayList<String> getNamesList () {
+		ArrayList <String> names = new ArrayList<>();
+		for (int i=0; i<globalNames.length; ++i) {
+			names.add(globalNames[i]);
+		}
+		return names;
+	}
+	
+	boolean checkIfNamesAreOK(ArrayList<String> names) {
+		if (names == null || names.size() != globalNames.length) {
+			return false;
+		}
+		for (int i=0; i<names.size(); ++i) {
+			if (!names.get(i).equals(globalNames[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	ArrayList<Student> getStudentsList () {
+		ArrayList <Student> students = new ArrayList<>();
+		students.add(new Student("Radoslav", 82154, 5.99));
+		students.add(new Student("Osman", 123456, 3.76));
+		students.add(new Student("Kristina", 63178, 4.79));
+		return students;
+	}
+	
+	
+/****************************HashCode tests*******************************/	
+	
 	@Test
-	void testHashCode() {
-		ArrayList <String> reference1 = new ArrayList<>();
-		reference1.add("Radoslav");
-		ArrayList <String> reference2 = reference1;
+	void testHashCodeWithNonPrimitiveType() {
+		ArrayList <Student> reference1 = getStudentsList();
+		ArrayList <Student> reference2 = reference1;
 		assertEquals(reference1.hashCode(), reference2.hashCode());
 		
-		ArrayList <String> reference3 = new ArrayList<>();
+		ArrayList <Student> reference3 = new ArrayList<>();
+		reference3.add(new Student("Boyko", 1234, 3.50));
 		assertNotEquals(reference1.hashCode(), reference3.hashCode());
 	}
 	
+	
+/******************************Equals tests********************************/	
+	
 	@Test
-	void testEquals() {
+	void testEqualsWithPrimitiveType() {
 		ArrayList <Integer> list1 = new ArrayList<>();
 		ArrayList <Integer> list2 = new ArrayList<>();
 		for (int i=0; i<100; ++i) {
@@ -31,9 +73,28 @@ class ArrayListTest {
 		assertFalse(list1.equals(list2));
 		assertFalse(list2.equals(list1));
 	}
+
 	
 	@Test
-	void testToString() {
+	void testEqualsWithNonPrimitiveType() {
+		ArrayList <Student> list1 = new ArrayList<>();
+		ArrayList <Student> list2 = new ArrayList<>();
+		for (int i=0; i<100; ++i) {
+			list1.add(new Student("Rado" + i, i, i * 1.2));
+			list2.add(new Student("Rado" + i, i, i * 1.2));
+		}
+		assertTrue(list1.equals(list2));
+		assertTrue(list2.equals(list1));
+		list1.remove();
+		assertFalse(list1.equals(list2));
+		assertFalse(list2.equals(list1));
+	}
+	
+	
+/******************************toString tests*********************************/	
+	
+	@Test
+	void testToStringWithPrimitiveType() {
 		ArrayList <Integer> numbers = new ArrayList<>();
 		numbers.add(4);
 		numbers.add(5);
@@ -45,6 +106,27 @@ class ArrayListTest {
 		assertTrue(numbers.toString().equals("[180]"));
 	}
 	
+	
+	@Test
+	void testToStringWithNonPrimitiveType() {
+		ArrayList <Student> students = new ArrayList<>();
+		students.add(new Student("Radoslav", 82154, 5.99));
+		students.add(new Student("Osman", 123456, 3.76));
+		students.add(new Student("Kristina", 63178, 4.79));
+		
+		assertTrue(students.toString().equals (
+				"[Student[name=Radoslav, fn=82154, grade=5.99], "
+				+ "Student[name=Osman, fn=123456, grade=3.76], "
+				+ "Student[name=Kristina, fn=63178, grade=4.79]]"
+		));
+		
+		students.clear();
+		assertTrue(students.toString().equals("[]"));
+	}
+	
+	
+/***************************Constructor tests******************************/
+	
 	@Test
 	void testDefaultConstructor() {
 		ArrayList <Integer> list = new ArrayList<>();
@@ -54,271 +136,375 @@ class ArrayListTest {
 		assertTrue(list.empty(), "Initial state must be empty");
 	}
 	
+	
 	@Test
-	void testConstructorWithSpecifiedSize() {
+	void testConstructorWithSpecifiedSizePrimitiveType() {
 		final int INITIAL_CAPACITY = 10;
 		ArrayList <Integer> list = new ArrayList<>(INITIAL_CAPACITY);
+		
+		assertEquals(INITIAL_CAPACITY, list.capacity(), "Initial capacity must be " + INITIAL_CAPACITY);
+		assertEquals(0, list.size(), "Initial size must be 0.");
+		assertTrue(list.empty(), "Initial state must be empty.");
+		
+		assertThrows(IllegalArgumentException.class, () -> {new ArrayList<Integer>(-5);});
+	}
+	
+	
+	@Test
+	void testConstructorWithSpecifiedSizeNonPrimitiveType() {
+		final int INITIAL_CAPACITY = 10;
+		ArrayList <Student> list = new ArrayList<>(INITIAL_CAPACITY);
 		
 		assertEquals(INITIAL_CAPACITY, list.capacity(), "Initial capacity must be " + INITIAL_CAPACITY);
 		assertEquals(0, list.size(), "Initial size must be 0");
 		assertTrue(list.empty(), "Initial state must be empty");
 		
-		assertThrows(IllegalArgumentException.class, () -> {new ArrayList<Integer>(-5);});
+		assertThrows(IllegalArgumentException.class, () -> {new ArrayList<Student>(-5);});
 	}
 	
-	@Test
-	void testSize() {
-		ArrayList <Integer> list1 = new ArrayList<>();
-		assertEquals(0, list1.size(), "Initial size must be 0");
-		
-		list1.add(6);
-		assertEquals(1, list1.size(), "Size must be 1");
-		
-		list1.add(10);
-		list1.add(4);
-		assertEquals(3, list1.size(), "Size must be 3");
-		
-		list1.remove();
-		assertEquals(2, list1.size(), "Size must be 2 after removing");
-		
-		ArrayList <Integer> list2 = new ArrayList<>();
-		list2.add(4);
-		list2.add(8);
-		list2.add(14);
-		list1.concatenate(list2);
-		assertEquals(5, list1.size(), "Size must be 5 after concatenation");
-		
-		list1.clear();
-		assertEquals(0, list1.size(), "Size must be 0 after clearing");
-	}
+
+/******************************Clear tests*********************************/	
 
 	@Test
-	void testEmpty() {
-		ArrayList <String> names = new ArrayList<>();
-		assertTrue(names.empty(), "Initial state must be empty");
-		
-		names.add("Radoslav");
-		names.add("Kaloyan");
-		assertFalse(names.empty(), "There are elements, it must not be empty");
-		
-		names.remove();
-		assertFalse(names.empty(), "There is still an element");
-		
-		names.add("Kristina");
-		names.clear();
-		assertTrue(names.empty(), "Must be empty after clear");
-	}
-	
-	@Test
 	void testClear() {
-		ArrayList <String> names = new ArrayList<>();
-		names.add("Radoslav");
-		names.add("Kaloyan");
-		names.add("Sofia");
+		ArrayList <String> names = getNamesList();
+		assertFalse(names.empty());
 		names.clear();
-		assertTrue(names.empty(), "Must be empty after clear");
-		assertEquals(0, names.size(), "Size must be 0 after clear");
+		assertTrue(names.empty(), "Must be empty after clearing.");
 	}
 	
+	
+/******************************Swap tests*********************************/
+	
 	@Test
-	void testSwapWithEqualListSizes() {
+	void testSwapWithEqualSmallListSizes() {
 		ArrayList <Integer> list1 = new ArrayList<>();
-		list1.add(4);
-		list1.add(1);
-		list1.add(-1);
 		int[] values1 = {4, 1, -1};
+		for (int i=0; i<values1.length; ++i) {
+			list1.add(values1[i]);
+		}
 		
 		ArrayList <Integer> list2 = new ArrayList<>();
-		list2.add(5);
-		list2.add(6);
-		list2.add(7);
 		int[] values2 = {5, 6, 7};
+		for (int i=0; i<values2.length; ++i) {
+			list2.add(values2[i]);
+		}
 		
 		list1.swap(list2);
 		for (int i=0; i<values1.length; ++i) {
 			assertEquals(values1[i], list2.get(i), "Check list2 on position " + i);
 			assertEquals(values2[i], list1.get(i), "Check list1 on position " + i);
 		}
+	}
+	
+	
+	@Test
+	void testSwapWithEqualBigListSizes() {
+		ArrayList <Integer> list1 = new ArrayList<>();
+		ArrayList <Integer> list2 = new ArrayList<>();
 		
-		list1.clear();
-		list2.clear();
-		
-		//Filling the lists with 10000 elements
-		for (int i=1; i<=10000; ++i) {
+		final int ELEMENTS_COUNT = 10000;
+		for (int i=1; i<=ELEMENTS_COUNT; ++i) {
 			list1.add(i);
 			list2.add(-i);
 		}
 		list2.swap(list1);
-		for (int i=1; i<=10000; ++i) {
+		for (int i=1; i<=ELEMENTS_COUNT; ++i) {
 			assertEquals(-i, list1.get(i-1), "Check list1 on position " + i);
 			assertEquals(i, list2.get(i-1), "Check list2 on position " + i);
 		}
 	}
+	
 	
 	@Test
 	void testSwapWithDifferentListSizes() {
-		ArrayList <Integer> list1 = new ArrayList<>();
-		list1.add(4);
-		list1.add(1);
-		list1.add(-1);
-		int[] values1 = {4, 1, -1};
-		
+		ArrayList <Integer> list1 = new ArrayList<>();	
 		ArrayList <Integer> list2 = new ArrayList<>();
-		list2.add(5);
-		list2.add(6);
-		list2.add(7);
-		list2.add(8);
-		list2.add(9);
-		int[] values2 = {5, 6, 7, 8, 9};
 		
-		list1.swap(list2);
-		assertEquals(values2.length, list1.size(), "List1's size must be " + values2.length);
-		assertEquals(values1.length, list2.size(), "List2's size must be " + values1.length);
+		final int ELEMENTS_COUNT1 = 10000;
+		final int ELEMENTS_COUNT2 = 100000;
 		
-		for (int i=0; i<values1.length; ++i) {
-			assertEquals(values1[i], list2.get(i), "Check list2 on position " + i);
-		}
-		
-		for (int i=0; i<values2.length; ++i) {
-			assertEquals(values2[i], list1.get(i), "Check list2 on position " + i);
-		}
-			
-		list1.clear();
-		list2.clear();
-		
-		//Filling list1 with 10000 elements
-		for (int i=1; i<=10000; ++i) {
+		for (int i=1; i<=ELEMENTS_COUNT1; ++i) {
 			list1.add(i);
 		}
 		
-		//Filling list2 with 100000 elements
-		for (int i=1; i<=100000; ++i) {
+		for (int i=1; i<=ELEMENTS_COUNT2; ++i) {
 			list2.add(-i);
 		}
 		
 		list2.swap(list1);
-		for (int i=1; i<=100000; ++i) {
+		for (int i=1; i<=ELEMENTS_COUNT2; ++i) {
 			assertEquals(-i, list1.get(i-1), "Check list1 on position " + i);
 		}
 		
-		for (int i=1; i<=10000; ++i) {
+		for (int i=1; i<=ELEMENTS_COUNT1; ++i) {
 			assertEquals(i, list2.get(i-1), "Check list2 on position " + i);
 		}
 	}
 	
+	
 	@Test
-	void testCapacity() {
-		ArrayList <String> names = new ArrayList<>();
-		assertEquals(ArrayList.INITIAL_CAPACITY, names.capacity(), "Initial capacity must be " + ArrayList.INITIAL_CAPACITY);
+	void testSwapWithNonPrimitiveType() {
+		ArrayList <Student> students1 = new ArrayList<>();
+		ArrayList <Student> students2 = new ArrayList<>();
 		
-		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
-			names.add("someName");
+		Student simona = new Student("Simona", 78165, 5.10);
+		Student petar = new Student("Petar", 82178, 3.10);
+		Student maria = new Student("Maria", 89162, 4.78);
+		
+		students1.add(simona);
+		students1.add(maria);
+		students2.add(petar);
+		
+		students1.swap(students2);
+		assertEquals(1, students1.size());
+		assertEquals(2, students2.size());
+		
+		assertEquals(petar, students1.get(0));
+		assertEquals(simona, students2.get(0));
+		assertEquals(maria, students2.get(1));
+	}
+	
+	
+/**************************Reserve tests*******************************/
+	
+	@Test
+	void testReserveWithMoreThanCurrentCapacity() {
+		ArrayList <Student> students = getStudentsList();
+		final int request = students.size() + 5000;
+		students.reserve(request);
+		assertTrue(students.capacity() >= request, "Capacity must be atleast the requested.");
+	}
+	
+	
+	@Test
+	void testReserveWithLessThanCurrentCapacity() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		names.reserve(globalNames.length - 1);
+		assertEquals(prevCapacity, names.capacity(), "Reserve must have had no effect.");
+		assertTrue(checkIfNamesAreOK(names), "Reserve must have had no effect.");
+	}
+	
+	
+	@Test
+	void testReserveWithNegativeRequest() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		names.reserve(-100);
+		assertEquals(prevCapacity, names.capacity(), "Reserve must have had no effect.");
+		assertTrue(checkIfNamesAreOK(names), "Reserve must have had no effect.");
+	}
+	
+	
+	@Test
+	void testReserveWithTooLargeRequest() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		try {
+			names.reserve(Integer.MAX_VALUE);
+		} catch (OutOfMemoryError e) {
+			assertEquals(prevCapacity, names.capacity(), "Reserve must have had no effect.");
+			assertTrue(checkIfNamesAreOK(names), "Reserve must have had no effect.");
 		}
-		assertEquals(ArrayList.INITIAL_CAPACITY*2, names.capacity(), "Capacity must be 2 times the initial capacity");
-		
-		names.reserve(1000);
-		assertTrue(names.capacity() >= 1000, "Capacity must be atleast 1000");
-		
-		names.resize(50000);
-		assertTrue(names.capacity() >= 50000, "Capacity must be atleast 50000");
-		
+	}
+	
+	
+/****************************Resize tests*********************************/
+	
+	@Test
+	void testResizeWithGreaterNewCapacity() {
+		ArrayList <String> names = getNamesList();
+		final int newCapacity = names.capacity() * 2 + 1;
+		names.resize(newCapacity);
+		assertEquals(newCapacity, names.capacity());
+		assertTrue(checkIfNamesAreOK(names));
+	}
+	
+	
+	@Test
+	void testResizeWithSmallerNewCapacity() {
+		ArrayList <Integer> numbers = new ArrayList<>();
+		for (int i=0; i<1000; ++i) {
+			numbers.add(i);
+		}
+		final int newCapacity = 350;
+		numbers.resize(newCapacity);
+		assertEquals(newCapacity, numbers.capacity());
+		assertEquals(newCapacity, numbers.size(), "Size must also be decreased.");
+		for (int i=0; i<newCapacity; ++i) {
+			assertEquals(i, numbers.get(i));
+		}
+	}
+	
+	
+	@Test
+	void testResizeToZeroCapacity() {
+		ArrayList <Student> students = getStudentsList();
+		students.resize(0);
+		assertEquals(0, students.size(), "Size must be 0");
+		assertEquals(0, students.capacity(), "Capacity must be 0");
+	}
+	
+	
+	@Test
+	void testResizeWithNegativeNewCapacity() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		assertThrows(IllegalArgumentException.class, () -> {names.resize(-5);});
+		assertEquals(prevCapacity, names.capacity(), "Capacity must be the same");
+		assertTrue(checkIfNamesAreOK(names), "Nothing must have changed");
+	}
+	
+	
+	@Test
+	void testResizeWithTooLargeNewCapacity() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		try {
+			names.resize(Integer.MAX_VALUE);
+		} catch (OutOfMemoryError e) {
+			assertEquals(prevCapacity, names.capacity(), "Capacity must be the same.");
+			assertTrue(checkIfNamesAreOK(names), "Nothing must have changed.");
+		}
+	}
+	
+	
+/**************************Shrink_to_fit tests******************************/
+	
+	@Test
+	void testShrinkToFitWithPrimitiveType() {
+		ArrayList <Integer> numbers = new ArrayList<>();
+		int elementsCount = ArrayList.INITIAL_CAPACITY * 2 + 3;
+		for (int i=0; i<elementsCount; ++i) {
+			numbers.add(i);
+		}
+		numbers.shrink_to_fit();
+		assertEquals(numbers.size(), numbers.capacity(), "Capacity must be equal to the size");
+		for (int i=0; i<elementsCount; ++i) {
+			assertEquals(i, numbers.get(i), "Data must be preserved");
+		}
+	}
+	
+	
+	@Test
+	void testShrinkToFitWithNonPrimitiveType() {
+		ArrayList <String> names = getNamesList();
 		names.shrink_to_fit();
-		assertEquals(names.size(), names.capacity(), "Capacity must fit the size");
+		assertEquals(names.capacity(), names.size(), "Capacity must be equal to the size");
+		assertTrue(checkIfNamesAreOK(names), "Data must be preserved");
 	}
 	
-	@Test
-	void testReserve() {
-		ArrayList <String> names = new ArrayList<>();
-		final int request = 5000;
-		names.reserve(request);
-		assertTrue(names.capacity() >= request, "Capacity must be atleast the requested");
-		names.reserve(request * 5);
-		assertTrue(names.capacity() >= request * 5, "Capacity must be atleast the requested");
-	}
+	
+/*****************************Add tests********************************/
 	
 	@Test
-	void testResize() {
-		ArrayList <Integer> list = new ArrayList<>();
-		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
-			list.add(i);
+	void testAddWithEmptyArray() {
+		ArrayList <Student> students = new ArrayList<>();
+		Student st = new Student("Radoslav", 82154, 5.99);
+		students.add(st);
+		assertEquals(1, students.size(), "After adding one element size must be 1.");
+		assertEquals(st, students.get(students.size() - 1));
+	}
+	
+	
+	@Test
+	void testAddWithNonEmptyArray() {
+		ArrayList <String> names = getNamesList();
+		int prevSize = names.size();
+		names.add("Ivon");
+		assertEquals(prevSize + 1, names.size());
+		assertTrue(names.get(names.size() - 1).equals("Ivon"), "The new element must be appended.");
+	}
+	
+	
+	@Test
+	void testAddWithChangingCapacity() {
+		ArrayList <Student> students = getStudentsList();
+		students.shrink_to_fit(); // Making the capacity equal to the size
+		int prevCapacity = students.capacity();
+		Student newStudent = new Student("Hristo Petrov", 42010, 5.82); 
+		students.add(newStudent);
+		assertEquals(students.capacity(), (int)Math.ceil(prevCapacity * ArrayList.GROWING_CONSTANT));
+		assertEquals(prevCapacity + 1, students.size());
+		assertEquals(newStudent, students.get(prevCapacity), "New Student must be appended in $prevCapacity index");
+	}
+	
+	
+	@Test
+	void testAddingTooManyElements() {
+		ArrayList <Integer> numbers = new ArrayList<>();
+		int i = 0;
+		while (i >= 0) {
+			int currentSize = numbers.size();
+			int currentCapacity = numbers.capacity();
+			try {
+				numbers.add(i);
+			} catch (OutOfMemoryError e) {
+				assertEquals(currentSize, numbers.size());
+				assertEquals(currentCapacity, numbers.capacity());
+				for (int j=0; j<currentSize; ++j) {
+					assertEquals(j, numbers.get(j));
+				}
+				break;
+			}
+			++i;
 		}
-		
-		final int resizeTo1 = ArrayList.INITIAL_CAPACITY * 2 + 14; 
-		list.resize(resizeTo1);
-		assertEquals(resizeTo1, list.capacity(), "Size must be " + resizeTo1);
-		
-		final int resizeTo2 = ArrayList.INITIAL_CAPACITY / 2 + 1;
-		list.resize(resizeTo2);
-		assertEquals(resizeTo2, list.capacity(), "Size must be " + resizeTo2);
-		
-		//If resize requested number is smaller than the original
-		//size, the method must cut the elements after a certain position onwards
-		for (int i=0; i<list.size(); ++i) {
-			assertEquals(i, list.get(i), "Check the position " + i);
-		}
 	}
 	
-	@Test
-	void testShrinkToFit() {
-		ArrayList <Double> list = new ArrayList<>();
-		list.add(4.5);
-		list.add(1.2);
-		list.add(-1.9);
-		list.shrink_to_fit();
-		assertEquals(list.size(), list.capacity(), "Capacity must be equal to the size after shrink");
-	
-		list.resize(700);
-		list.remove();
-		list.reserve(10000);
-		list.shrink_to_fit();
-		assertEquals(list.size(), list.capacity(), "Capacity must be equal to the size after shrink");
-	}
+
+/*****************************Remove tests********************************/	
 	
 	@Test
-	void testAdd() {
-		ArrayList <Integer> list = new ArrayList<>();
-		list.add(5);
-		assertEquals(1, list.size(), "After adding one element size must be 1");
-		list.add(7);
-		assertEquals(2, list.size(), "After adding second element size must be 2");
-		assertEquals(5, list.get(0), "First element must be 5");
-		assertEquals(7, list.get(1), "First element must be 7");
-		
-		ArrayList <Double> list2 = new ArrayList<>();
-		for (int i=0; i<ArrayList.INITIAL_CAPACITY+1; ++i) {
-			list2.add(0.8);
-		}
-		assertEquals(ArrayList.INITIAL_CAPACITY+1, list2.size(), "Size must be " + ArrayList.INITIAL_CAPACITY+1);
-		assertEquals(ArrayList.INITIAL_CAPACITY * 2, list2.capacity(), "Capacity must be doubled");
-	}
-	
-	@Test
-	void testRemove() {
-		ArrayList <String> names = new ArrayList<>();
-		names.add("Radoslav");
-		names.add("Christian");
-		names.add("Jonathan");
-		assertEquals(3, names.size(), "Size must be 3");
-		
+	void testRemoveFromNonEmptyArray() {
+		ArrayList <String> names = getNamesList();
 		names.remove();
-		assertEquals(2, names.size(), "After removal size must be 2");
-		names.remove();
-		assertEquals(1, names.size(), "After second removal size must be 1");
+		assertEquals(globalNames.length - 1, names.size(), "After removal size must 1 less.");
+		for (int i=0; i<globalNames.length - 1; ++i) {
+			assertTrue(names.get(i).equals(globalNames[i]));
+		}
 	}
 	
+	
 	@Test
-	void testGet() {
+	void testRemoveFromEmptyArray() {
+		ArrayList <String> names = new ArrayList<>();
+		assertThrows(ArrayIndexOutOfBoundsException.class, () -> {names.remove();});
+		assertTrue(names.empty());
+		assertEquals(ArrayList.INITIAL_CAPACITY, names.capacity(), "Nothing should have changed.");
+	}
+	
+
+/******************************Get tests*********************************/		
+	
+	@Test
+	void testLegalGet() {
 		ArrayList <Integer> list = new ArrayList<>();
 		list.add(1);
 		list.add(-1);
 		list.add(5);
 		assertEquals(1, list.get(0), "First element must be 1");
-		assertEquals(-1, list.get(1), "Second element must be 1");
-		assertEquals(5, list.get(2), "Third element must be 1");
+		assertEquals(-1, list.get(1), "Second element must be -1");
+		assertEquals(5, list.get(2), "Third element must be 5");
 	}
 	
+	
 	@Test
-	void testSet() {
+	void testIllegalGet() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		assertThrows(IndexOutOfBoundsException.class, () -> {names.get(names.size() + 1);});
+		assertThrows(IndexOutOfBoundsException.class, () -> {names.get(-2);});
+		
+		assertEquals(prevCapacity, names.capacity(), "Capacity must be the same.");
+		assertTrue(checkIfNamesAreOK(names), "Nothing should have changed.");
+	}
+	
+
+/******************************Set tests*********************************/
+	
+	@Test
+	void testLegalSet() {
 		ArrayList <Integer> list = new ArrayList<>();
 		list.add(1);
 		list.add(-1);
@@ -330,14 +516,39 @@ class ArrayListTest {
 		assertEquals(3, list.get(1), "Second element must be 3");
 		assertEquals(4, list.get(2), "Third element must be 4");
 	}
+	
+	
+	@Test
+	void testIllegalSet() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		assertThrows(IndexOutOfBoundsException.class, () -> {names.set(names.size() + 1, "Florian");});
+		assertThrows(IndexOutOfBoundsException.class, () -> {names.set(-2, "Florian");});
+		
+		assertEquals(prevCapacity, names.capacity(), "Capacity must be the same.");
+		assertTrue(checkIfNamesAreOK(names), "Nothing should have changed.");
+	}
 
+
+/***************************Concatenate tests******************************/	
+	
+	@Test
+	void testConcatenateWithNullReference() {
+		ArrayList <String> names = getNamesList();
+		int prevCapacity = names.capacity();
+		assertThrows(NullPointerException.class, () -> {names.concatenate(null);});
+
+		assertEquals(prevCapacity, names.capacity(), "Capacity must be the same.");
+		assertTrue(checkIfNamesAreOK(names), "Nothing should have changed.");
+	}
+	
+	
 	@Test
 	void testConcatenate() {
 		ArrayList <Integer> list1 = new ArrayList<>();
 		for (int i=0; i<800; ++i) {
 			list1.add(i);
 		}
-		assertThrows(NullPointerException.class, () -> {list1.concatenate(null);});
 		
 		ArrayList <Integer> list2 = new ArrayList<>();
 		for (int i=800; i<1000; ++i) {
@@ -350,11 +561,14 @@ class ArrayListTest {
 			assertEquals(i, list1.get(i));
 		}
 		
-		assertEquals(200, list2.size(), "List2's size must not be changed");
+		assertEquals(200, list2.size(), "List2's size should not be changed");
 		for (int i=800; i<1000; ++i) {
 			assertEquals(i, list2.get(i-800), "Nothing should be changed");
 		}
 	}
+	
+	
+/******************************Other tests*********************************/
 	
 	@Test
 	void testArrayWithZeroCapacity() {
@@ -365,44 +579,5 @@ class ArrayListTest {
 		numbers.add(9.4);
 		assertEquals(1, numbers.size(), "There must not be problem adding an element");
 		assertEquals(1, numbers.capacity());
-	}
-	
-	@Test
-	void testResizeToZeroCapacity() {
-		ArrayList <Integer> list = new ArrayList<>();
-		list.add(4);
-		list.add(5);
-		list.resize(0);
-		list.shrink_to_fit();
-
-		assertEquals(0, list.size(), "Size must be 0");
-		assertEquals(0, list.capacity(), "Capacity must be 0");
-
-		list.add(9);
-		assertEquals(1, list.size(), "There must not be problem adding an element");
-		assertEquals(1, list.capacity());
-	}
-	
-	@Test
-	void extremeTest() {
-		ArrayList <Integer> numbers = new ArrayList<>();
-		final int EXTREME_COUNT = 80_000_000;
-		
-		for (int i=0; i<EXTREME_COUNT; ++i) {
-			numbers.add(i);
-		}
-		assertEquals(EXTREME_COUNT, numbers.size(), "Size must be 1 million");
-		for (int i=0; i<EXTREME_COUNT; ++i){
-			assertEquals(i, numbers.get(i), "On pos " + i + " must be " + i);
-		}
-		
-		for (int i=0; i<EXTREME_COUNT/2; ++i) {
-			numbers.remove();
-		}
-		assertEquals(EXTREME_COUNT - EXTREME_COUNT/2, numbers.size());
-		assertTrue(numbers.capacity() >= EXTREME_COUNT, "Capacity must be kept");
-		
-		numbers.shrink_to_fit();
-		assertEquals(numbers.size(), numbers.capacity());
 	}
 }
